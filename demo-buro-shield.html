@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuroShield ÔÇö Swiss AI Legal Assistant</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #10233f;
+    --navy2: #173a66;
+    --navy3: #225183;
+    --red: #d52b1e;
+    --red2: #b91f15;
+    --bg: #eef3f8;
+    --bg2: #f8fafc;
+    --surface: rgba(255,255,255,0.88);
+    --surface-solid: #ffffff;
+    --border: rgba(18, 39, 71, 0.12);
+    --border-strong: rgba(18, 39, 71, 0.22);
+    --muted: #66758f;
+    --text: #101b2d;
+    --green: #0c7a54;
+    --amber: #b86b00;
+    --shadow: 0 18px 55px rgba(16, 35, 63, 0.12);
+    --shadow-soft: 0 10px 30px rgba(16, 35, 63, 0.08);
+    --radius-lg: 26px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    min-height: 100vh;
+    color: var(--text);
+    background:
+      radial-gradient(circle at top left, rgba(34, 81, 131, 0.18), transparent 34rem),
+      radial-gradient(circle at top right, rgba(213, 43, 30, 0.12), transparent 28rem),
+      linear-gradient(180deg, #f9fbff 0%, var(--bg) 100%);
+    line-height: 1.45;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(16,35,63,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16,35,63,0.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(to bottom, black, transparent 72%);
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: 72px;
+    padding: 0 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(248, 250, 252, 0.82);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(18px);
+  }
+
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, var(--navy), var(--navy3));
+    box-shadow: 0 12px 28px rgba(16,35,63,0.24);
+  }
+  .logo-name {
+    font-weight: 850;
+    font-size: 19px;
+    letter-spacing: -0.03em;
+    color: var(--text);
+  }
+  .logo-name span { color: var(--red); }
+  .logo-sub {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    padding-left: 2px;
+  }
+
+  .privacy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.76);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+  }
+  .privacy-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #18b875;
+    box-shadow: 0 0 0 6px rgba(24,184,117,0.14);
+  }
+  .privacy-badge span { font-size: 12px; font-weight: 700; color: var(--navy); }
+
+  main {
+    width: min(1080px, calc(100% - 36px));
+    margin: 0 auto;
+    padding: 54px 0 62px;
+  }
+
+  .hero {
+    max-width: 760px;
+    margin: 0 auto 40px;
+    text-align: center;
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(34,81,131,0.14);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.72);
+    color: var(--navy2);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    box-shadow: var(--shadow-soft);
+  }
+  .hero h1 {
+    font-size: clamp(42px, 7vw, 74px);
+    line-height: 0.94;
+    letter-spacing: -0.075em;
+    font-weight: 900;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  .hero p {
+    max-width: 640px;
+    margin: 0 auto;
+    font-size: clamp(15px, 2vw, 18px);
+    color: var(--muted);
+    line-height: 1.75;
+  }
+
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    margin: 0 auto 34px;
+  }
+
+  .module-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 276px;
+    padding: 30px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.76));
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  }
+  .module-card::before {
+    content: "";
+    position: absolute;
+    width: 190px;
+    height: 190px;
+    right: -70px;
+    top: -70px;
+    border-radius: 50%;
+    opacity: 0.16;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+  }
+  .module-card.rental::before { background: var(--navy3); }
+  .module-card.flight::before { background: var(--red); }
+  .module-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+    border-color: var(--border-strong);
+  }
+  .module-card:hover::before { transform: scale(1.12); opacity: 0.22; }
+
+  .card-icon {
+    position: relative;
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 22px;
+  }
+  .card-icon.blue { background: rgba(34, 81, 131, 0.11); }
+  .card-icon.red  { background: rgba(213, 43, 30, 0.11); }
+
+  .card-title {
+    position: relative;
+    font-weight: 850;
+    font-size: 23px;
+    letter-spacing: -0.035em;
+    margin-bottom: 10px;
+  }
+  .card-desc {
+    position: relative;
+    max-width: 420px;
+    min-height: 72px;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .tag-row { position: relative; display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-size: 11px;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+  .tag.blue { background: rgba(34,81,131,0.1); color: var(--navy2); }
+  .tag.red  { background: rgba(213,43,30,0.1); color: var(--red2); }
+
+  .back-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    color: var(--muted);
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.72);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--navy2);
+    font-size: 13px;
+    font-weight: 800;
+    padding: 9px 13px;
+    font-family: inherit;
+    transition: transform .16s ease, box-shadow .16s ease;
+  }
+  .back-btn:hover { transform: translateX(-2px); box-shadow: var(--shadow-soft); }
+  .back-nav .sep { color: var(--border-strong); }
+  .back-nav .module-title { font-size: 15px; font-weight: 850; color: var(--text); }
+
+  .form-stack {
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .form-field { width: 100%; }
+  .form-field label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 7px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-size: 14px;
+    color: var(--text);
+    background: rgba(255,255,255,0.82);
+    font-family: inherit;
+    outline: none;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+    transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+  }
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus {
+    border-color: rgba(34,81,131,0.55);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(34,81,131,0.1);
+  }
+  .form-field textarea { min-height: 154px; resize: vertical; }
+
+  .regime-banner {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border-radius: 15px;
+    padding: 12px 15px;
+    font-size: 13px;
+    font-weight: 800;
+    border: 1px solid transparent;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .drop-zone {
+    position: relative;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+    padding: 38px 24px;
+    text-align: center;
+    cursor: pointer;
+    background: rgba(255,255,255,0.66);
+    box-shadow: var(--shadow-soft);
+    transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+  }
+  .drop-zone:hover {
+    border-color: rgba(34,81,131,0.55);
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.9);
+  }
+  .drop-zone .dz-title {
+    font-weight: 850;
+    font-size: 16px;
+    color: var(--text);
+    margin: 12px 0 4px;
+  }
+  .drop-zone .dz-sub { font-size: 13px; color: var(--muted); }
+
+  .btn-primary,
+  .btn-confirm,
+  .btn-letter {
+    border: none;
+    border-radius: 15px;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 850;
+    letter-spacing: -0.01em;
+    box-shadow: 0 16px 35px rgba(16,35,63,0.18);
+    transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease;
+  }
+  .btn-primary {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 15px;
+  }
+  .btn-primary:hover,
+  .btn-confirm:hover,
+  .btn-letter:hover { transform: translateY(-2px); box-shadow: 0 20px 42px rgba(16,35,63,0.23); }
+  .btn-primary:disabled,
+  .btn-letter:disabled { opacity: 0.64; cursor: not-allowed; transform: none; }
+  .btn-navy, .btn-confirm, .btn-letter { background: linear-gradient(135deg, var(--navy), var(--navy3)); }
+  .btn-red { background: linear-gradient(135deg, var(--red), #ef5a4f); }
+
+  .btn-ghost {
+    background: rgba(255,255,255,0.72);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 14px;
+    padding: 11px 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 14px;
+    flex: 1;
+  }
+  .btn-confirm {
+    flex: 2;
+    padding: 11px 0;
+    font-size: 14px;
+  }
+  .divider {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .spinner-wrap {
+    max-width: 520px;
+    margin: 40px auto;
+    text-align: center;
+    padding: 46px 24px;
+    border-radius: var(--radius-lg);
+    background: rgba(255,255,255,0.78);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+  }
+  .spinner {
+    width: 54px;
+    height: 54px;
+    border: 4px solid rgba(16,35,63,0.12);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 22px;
+  }
+  .spinner.navy { border-top-color: var(--navy3); }
+  .spinner.red  { border-top-color: var(--red); }
+  .spinner-title { font-weight: 850; color: var(--text); margin-bottom: 6px; font-size: 17px; }
+  .spinner-sub { font-size: 13px; color: var(--muted); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .privacy-header { display: flex; align-items: center; gap: 13px; margin-bottom: 16px; }
+  .privacy-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 16px;
+    background: rgba(34,81,131,0.1);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .privacy-title { font-weight: 850; color: var(--text); font-size: 16px; letter-spacing: -0.02em; }
+  .privacy-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .privacy-box {
+    background: #0f1e3c;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 17px;
+    max-height: 260px;
+    overflow-y: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: #d9e7ff;
+    line-height: 1.75;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .redacted-tag {
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 850;
+  }
+  .btn-row { display: flex; gap: 11px; }
+
+  .card {
+    max-width: 880px;
+    margin: 0 auto 17px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(14px);
+  }
+  .card-label {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .score-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 22px;
+  }
+  .score-ring-wrap { position: relative; width: 118px; height: 118px; flex-shrink: 0; }
+  .score-ring-wrap svg { width: 118px; height: 118px; }
+  .score-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-num { font-size: 30px; font-weight: 900; line-height: 1; letter-spacing: -0.05em; }
+  .score-denom { font-size: 10px; color: var(--muted); letter-spacing: 0.12em; font-weight: 800; }
+  .score-label {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-weight: 850;
+  }
+  .score-verdict {
+    font-size: clamp(22px, 4vw, 30px);
+    line-height: 1.05;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .regime-pill {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    background: rgba(34,81,131,0.1);
+    color: var(--navy2);
+    border-radius: 999px;
+    padding: 6px 10px;
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+  .comp-est { font-size: 14px; color: var(--muted); }
+  .comp-est strong { color: var(--green); font-weight: 900; }
+  .new-analysis {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.68);
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 850;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .finding-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 13px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .finding-row:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+  .badge {
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    padding: 5px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+    height: fit-content;
+  }
+  .badge-high { background: rgba(213,43,30,0.12); color: #991b1b; }
+  .badge-medium { background: rgba(196,124,0,0.13); color: #7c4f00; }
+  .badge-low { background: rgba(10,124,78,0.12); color: #1b5e20; }
+  .finding-title { font-weight: 850; color: var(--text); font-size: 15px; margin-bottom: 4px; }
+  .finding-detail { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+  .legal-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 9px;
+  }
+  .legal-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--navy3);
+    flex-shrink: 0;
+  }
+  .legal-text { font-size: 14px; color: var(--text); }
+
+  .complexity-card {
+    max-width: 880px;
+    margin: 0 auto 17px;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-soft);
+  }
+  .complexity-label {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .complexity-text { font-size: 14px; line-height: 1.7; margin-bottom: 18px; }
+  .cta-row { display: flex; gap: 11px; flex-wrap: wrap; }
+  .btn-letter {
+    flex: 2;
+    min-width: 210px;
+    padding: 13px 18px;
+    font-size: 14px;
+  }
+  .btn-lawyer {
+    flex: 1;
+    min-width: 190px;
+    padding: 13px 18px;
+    border: 1px solid rgba(213,43,30,0.45);
+    border-radius: 15px;
+    background: rgba(255,255,255,0.52);
+    color: var(--red2);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 850;
+    font-family: inherit;
+  }
+
+  .letter-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.85;
+    white-space: pre-wrap;
+    font-family: Georgia, "Times New Roman", serif;
+  }
+
+  .trust-bar {
+    margin-top: 44px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: rgba(255,255,255,0.58);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    box-shadow: var(--shadow-soft);
+  }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 42px;
+    padding: 9px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.56);
+    font-size: 12px;
+    font-weight: 750;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 820px) {
+    main { width: min(100% - 28px, 680px); padding-top: 38px; }
+    .module-grid { grid-template-columns: 1fr; }
+    .trust-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .score-header { grid-template-columns: auto 1fr; }
+    .new-analysis { grid-column: 1 / -1; width: fit-content; }
+  }
+
+  @media (max-width: 560px) {
+    header { height: 64px; padding: 0 16px; }
+    .logo-icon { width: 36px; height: 36px; border-radius: 12px; }
+    .logo-sub { display: none; }
+    .privacy-badge span { display: none; }
+    .privacy-badge { padding: 8px 10px; }
+    main { width: min(100% - 22px, 520px); padding-top: 30px; }
+    .hero h1 { font-size: 44px; }
+    .module-card, .card, .complexity-card { padding: 20px; border-radius: 22px; }
+    .form-row { grid-template-columns: 1fr; }
+    .score-header { grid-template-columns: 1fr; text-align: center; }
+    .score-ring-wrap { margin: 0 auto; }
+    .finding-row { grid-template-columns: 1fr; }
+    .btn-row { flex-direction: column; }
+    .trust-bar { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+    <span class="logo-name">Buro<span>Shield</span></span>
+    <span class="logo-sub">Swiss AI Legal Assistant</span>
+  </div>
+  <div class="privacy-badge">
+    <div class="privacy-dot"></div>
+    <span>Data never leaves your browser</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- DASHBOARD -->
+  <div id="view-dashboard">
+    <div class="hero">
+      <div class="hero-tag">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1a365d" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Swiss-Ghost Privacy Certified
+      </div>
+      <h1>Your rights. Enforced.</h1>
+      <p>AI-powered legal analysis for Swiss tenants and air travellers. Anonymous by design ÔÇö your data is scrubbed client-side before any AI sees it.</p>
+    </div>
+
+    <div class="module-grid">
+      <div class="module-card rental" onclick="openModule('rental')">
+        <div class="card-icon blue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a365d" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+        </div>
+        <div class="card-title">Rental Check</div>
+        <div class="card-desc">Analyze your lease agreement for illegal clauses, unlawful rent increases, or deposit violations under the Swiss Code of Obligations.</div>
+        <div class="tag-row">
+          <span class="tag blue">Art. 253 CO</span>
+          <span class="tag blue">VMWG</span>
+          <span class="tag blue">FADP/LPD</span>
+        </div>
+      </div>
+
+      <div class="module-card flight" onclick="openModule('flight')">
+        <div class="card-icon red">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D52B1E" stroke-width="1.8"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        </div>
+        <div class="card-title">Flight Check</div>
+        <div class="card-desc">Scan flight disruption details for compensation eligibility under EU/Swiss air passenger rights regulations across 33 countries.</div>
+        <div class="tag-row">
+          <span class="tag red">EC 261/2004</span>
+          <span class="tag red">UK261</span>
+          <span class="tag red">DOT ┬À APPR</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="trust-bar">
+      <div class="trust-item"><span>Secure</span><span>Client-side anonymization</span></div>
+      <div class="trust-item"><span>Swiss</span><span>Swiss law (CO / FADP)</span></div>
+      <div class="trust-item"><span>Legal</span><span>EC 261/2004 ┬À UK261 ┬À DOT ┬À APPR</span></div>
+      <div class="trust-item"><span>Global</span><span>33 countries supported</span></div>
+    </div>
+  </div>
+
+  <!-- RENTAL MODULE -->
+  <div id="view-rental" class="hidden">
+    <div class="back-nav">
+      <button class="back-btn" onclick="goBack()">ÔåÉ Back to dashboard</button>
+      <span class="sep">|</span>
+      <span class="module-title">Rental Check</span>
+    </div>
+
+    <!-- Input step -->
+    <div id="rental-input" class="form-stack">
+      <div class="drop-zone" onclick="document.getElementById('file-input').click()" id="drop-zone">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        <div class="dz-title" id="dz-title">Upload Lease Agreement</div>
+        <div class="dz-sub">PDF or TXT ┬À processed in your browser</div>
+        <input type="file" id="file-input" accept=".txt,.pdf" style="display:none" onchange="handleFile(event)">
+      </div>
+      <div class="divider">ÔÇö or paste text ÔÇö</div>
+      <div class="form-field">
+        <textarea id="rental-text" placeholder="Paste your lease agreement text hereÔÇª"></textarea>
+      </div>
+      <button class="btn-primary btn-navy" onclick="startRentalScan()">Run Privacy Scan &amp; Analyze ÔåÆ</button>
+    </div>
+
+    <!-- Privacy preview step -->
+    <div id="rental-preview" class="hidden">
+      <div class="card">
+        <div class="privacy-header">
+          <div class="privacy-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a365d" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="privacy-title">Swiss-Ghost Privacy Filter</div>
+            <div class="privacy-sub" id="rental-redaction-count"></div>
+          </div>
+        </div>
+        <div class="privacy-box" id="rental-preview-box"></div>
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="showStep('rental','input')">ÔåÉ Back</button>
+          <button class="btn-confirm" onclick="runRentalAnalysis()">Confirm &amp; Analyze ÔåÆ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processing step -->
+    <div id="rental-processing" class="hidden">
+      <div class="spinner-wrap">
+        <div class="spinner navy"></div>
+        <div class="spinner-title">Analyzing Lease Agreement</div>
+        <div class="spinner-sub">Applying Swiss Code of Obligations (Art. 253 et seq.) &amp; FADP/LPDÔÇª</div>
+      </div>
+    </div>
+
+    <!-- Result step -->
+    <div id="rental-result" class="hidden"></div>
+  </div>
+
+  <!-- FLIGHT MODULE -->
+  <div id="view-flight" class="hidden">
+    <div class="back-nav">
+      <button class="back-btn" onclick="goBack()">ÔåÉ Back to dashboard</button>
+      <span class="sep">|</span>
+      <span class="module-title">Flight Check</span>
+    </div>
+
+    <!-- Input step -->
+    <div id="flight-input" class="form-stack">
+      <div id="regime-banner" class="regime-banner hidden"></div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label>Flight Number</label>
+          <input type="text" id="f-flight" placeholder="LX 038" oninput="updateRegimeBanner()">
+        </div>
+        <div class="form-field">
+          <label>Date</label>
+          <input type="date" id="f-date">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Origin Airport</label>
+          <input type="text" id="f-origin" placeholder="ZRH">
+        </div>
+        <div class="form-field" style="min-width:180px">
+          <label>Origin Country</label>
+          <select id="f-origin-country" onchange="updateRegimeBanner()">
+            <option value="">Select countryÔÇª</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Destination Airport</label>
+          <input type="text" id="f-dest" placeholder="JFK">
+        </div>
+        <div class="form-field" style="min-width:180px">
+          <label>Destination Country</label>
+          <select id="f-dest-country">
+            <option value="">Select countryÔÇª</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Delay (hours)</label>
+          <input type="number" id="f-delay" placeholder="4" min="0">
+        </div>
+        <div class="form-field">
+          <label>Stated Reason</label>
+          <input type="text" id="f-reason" placeholder="Technical fault">
+        </div>
+      </div>
+      <button class="btn-primary btn-red" onclick="startFlightScan()" id="flight-scan-btn">Check Compensation Rights ÔåÆ</button>
+    </div>
+
+    <!-- Privacy preview -->
+    <div id="flight-preview" class="hidden">
+      <div class="card">
+        <div class="privacy-header">
+          <div class="privacy-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a365d" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="privacy-title">Swiss-Ghost Privacy Filter</div>
+            <div class="privacy-sub" id="flight-redaction-count"></div>
+          </div>
+        </div>
+        <div class="privacy-box" id="flight-preview-box"></div>
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="showStep('flight','input')">ÔåÉ Back</button>
+          <button class="btn-confirm" onclick="runFlightAnalysis()">Confirm &amp; Analyze ÔåÆ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processing -->
+    <div id="flight-processing" class="hidden">
+      <div class="spinner-wrap">
+        <div class="spinner red"></div>
+        <div class="spinner-title">Checking Compensation Eligibility</div>
+        <div class="spinner-sub" id="flight-processing-sub">Cross-referencing applicable regulationsÔÇª</div>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div id="flight-result" class="hidden"></div>
+  </div>
+
+</main>
+
+<script>
+// ÔöÇÔöÇÔöÇ Swiss-Ghost Privacy Filter ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+const REDACTION_RULES = [
+  { label: "REDACTED_AHV",           pattern: /\b756\.\d{4}\.\d{4}\.\d{2}\b/g },
+  { label: "REDACTED_IBAN",          pattern: /\bCH\d{2}[\s]?\d{4}[\s]?\d{4}[\s]?\d{4}[\s]?\d{4}[\s]?\d{1}\b/gi },
+  { label: "REDACTED_IBAN",          pattern: /\b[A-Z]{2}\d{2}[\s]?\d{4}[\s]?\d{4}[\s]?\d{4}[\s]?\d{4}[\s]?\d{2}\b/g },
+  { label: "REDACTED_ADDRESS",       pattern: /\b(Strasse|Gasse|Weg|Allee|Platz|Avenue|Rue|Via|Chemin)\s+\d+[a-z]?\b/gi },
+  { label: "REDACTED_ADDRESS",       pattern: /\b\d{4}\s+[A-Z├ä├û├£][a-z├ñ├Â├╝]+\b/g },
+  { label: "REDACTED_PHONE",         pattern: /\b(\+41|0041|0)\s?[\s\-]?\d{2}[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}\b/g },
+  { label: "REDACTED_EMAIL",         pattern: /\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b/g },
+  { label: "REDACTED_NAME",          pattern: /\b(Herr|Frau|M\.|Mme\.?|Mr\.?|Ms\.?|Dr\.?|Prof\.?)\s+[A-Z├ä├û├£][a-z├ñ├Â├╝]+(?:\s+[A-Z├ä├û├£][a-z├ñ├Â├╝]+)?\b/g },
+  { label: "REDACTED_DATE_OF_BIRTH", pattern: /\b(geb\.?|geboren|n├®[e]?|born)\s*:?\s*\d{1,2}[.\-\/]\d{1,2}[.\-\/]\d{2,4}\b/gi },
+];
+
+function anonymize(text) {
+  let result = text; let count = 0;
+  for (const rule of REDACTION_RULES) {
+    const matches = result.match(rule.pattern) || [];
+    count += matches.length;
+    result = result.replace(rule.pattern, `[${rule.label}]`);
+  }
+  return { anonymized: result, redactionCount: count };
+}
+
+function renderPrivacyBox(containerId, text) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  text.split(/(\[REDACTED_[^\]]+\])/g).forEach(part => {
+    if (part.startsWith('[REDACTED_')) {
+      const tag = document.createElement('span');
+      tag.className = 'redacted-tag';
+      tag.textContent = part;
+      el.appendChild(tag);
+    } else {
+      el.appendChild(document.createTextNode(part));
+    }
+  });
+}
+
+// ÔöÇÔöÇÔöÇ Country Data ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+const COUNTRIES = [
+  { code:"CH", label:"­ƒç¿­ƒç¡ Switzerland",       regime:"EC 261/2004 (bilateral)" },
+  { code:"DE", label:"­ƒç®­ƒç¬ Germany",            regime:"EC 261/2004" },
+  { code:"FR", label:"­ƒç½­ƒçÀ France",             regime:"EC 261/2004" },
+  { code:"IT", label:"­ƒç«­ƒç╣ Italy",              regime:"EC 261/2004" },
+  { code:"ES", label:"­ƒç¬­ƒç© Spain",              regime:"EC 261/2004" },
+  { code:"NL", label:"­ƒç│­ƒç▒ Netherlands",        regime:"EC 261/2004" },
+  { code:"BE", label:"­ƒçº­ƒç¬ Belgium",            regime:"EC 261/2004" },
+  { code:"AT", label:"­ƒçª­ƒç╣ Austria",            regime:"EC 261/2004" },
+  { code:"PT", label:"­ƒçÁ­ƒç╣ Portugal",           regime:"EC 261/2004" },
+  { code:"GR", label:"­ƒç¼­ƒçÀ Greece",             regime:"EC 261/2004" },
+  { code:"SE", label:"­ƒç©­ƒç¬ Sweden",             regime:"EC 261/2004" },
+  { code:"DK", label:"­ƒç®­ƒç░ Denmark",            regime:"EC 261/2004" },
+  { code:"FI", label:"­ƒç½­ƒç« Finland",            regime:"EC 261/2004" },
+  { code:"PL", label:"­ƒçÁ­ƒç▒ Poland",             regime:"EC 261/2004" },
+  { code:"CZ", label:"­ƒç¿­ƒç┐ Czech Republic",     regime:"EC 261/2004" },
+  { code:"HU", label:"­ƒç¡­ƒç║ Hungary",            regime:"EC 261/2004" },
+  { code:"RO", label:"­ƒçÀ­ƒç┤ Romania",            regime:"EC 261/2004" },
+  { code:"HR", label:"­ƒç¡­ƒçÀ Croatia",            regime:"EC 261/2004" },
+  { code:"IE", label:"­ƒç«­ƒç¬ Ireland",            regime:"EC 261/2004" },
+  { code:"LU", label:"­ƒç▒­ƒç║ Luxembourg",         regime:"EC 261/2004" },
+  { code:"SK", label:"­ƒç©­ƒç░ Slovakia",           regime:"EC 261/2004" },
+  { code:"SI", label:"­ƒç©­ƒç« Slovenia",           regime:"EC 261/2004" },
+  { code:"LT", label:"­ƒç▒­ƒç╣ Lithuania",          regime:"EC 261/2004" },
+  { code:"LV", label:"­ƒç▒­ƒç╗ Latvia",             regime:"EC 261/2004" },
+  { code:"EE", label:"­ƒç¬­ƒç¬ Estonia",            regime:"EC 261/2004" },
+  { code:"MT", label:"­ƒç▓­ƒç╣ Malta",              regime:"EC 261/2004" },
+  { code:"CY", label:"­ƒç¿­ƒç¥ Cyprus",             regime:"EC 261/2004" },
+  { code:"UK", label:"­ƒç¼­ƒçº United Kingdom",     regime:"UK261" },
+  { code:"US", label:"­ƒç║­ƒç© United States",      regime:"DOT 14 CFR 259" },
+  { code:"CA", label:"­ƒç¿­ƒçª Canada",             regime:"APPR" },
+  { code:"AU", label:"­ƒçª­ƒç║ Australia",          regime:"Limited" },
+  { code:"JP", label:"­ƒç»­ƒçÁ Japan",              regime:"Limited" },
+  { code:"SG", label:"­ƒç©­ƒç¼ Singapore",          regime:"Limited" },
+  { code:"AE", label:"­ƒçª­ƒç¬ UAE",               regime:"Limited" },
+  { code:"TR", label:"­ƒç╣­ƒçÀ Turkey",             regime:"Limited" },
+  { code:"TH", label:"­ƒç╣­ƒç¡ Thailand",           regime:"None" },
+  { code:"CN", label:"­ƒç¿­ƒç│ China",              regime:"None" },
+  { code:"IN", label:"­ƒç«­ƒç│ India",              regime:"None" },
+  { code:"BR", label:"­ƒçº­ƒçÀ Brazil",             regime:"None" },
+  { code:"MX", label:"­ƒç▓­ƒç¢ Mexico",             regime:"None" },
+  { code:"ZA", label:"­ƒç┐­ƒçª South Africa",       regime:"None" },
+  { code:"OTHER", label:"­ƒîì Other",            regime:"None" },
+];
+
+const REGIME_COLORS = {
+  "EC 261/2004":            { bg:"#e8f0fe", color:"#1a365d" },
+  "EC 261/2004 (bilateral)":{ bg:"#e8f0fe", color:"#1a365d" },
+  "UK261":                  { bg:"#e8f5e9", color:"#1b5e20" },
+  "DOT 14 CFR 259":         { bg:"#fff3e0", color:"#7c4f00" },
+  "APPR":                   { bg:"#fce4ec", color:"#880e4f" },
+  "Limited":                { bg:"#fef3cd", color:"#7c4f00" },
+  "None":                   { bg:"#f5f5f5", color:"#666" },
+};
+
+const EU_CARRIER_CODES = ["LH","AF","KL","IB","AZ","SK","LO","OK","OS","SN","TP","AY","EI","VY","U2","FR","W6","EW","BT","LX","WK","A3","OU","RO"];
+
+// Populate country dropdowns
+window.addEventListener('DOMContentLoaded', () => {
+  ['f-origin-country','f-dest-country'].forEach(id => {
+    const sel = document.getElementById(id);
+    COUNTRIES.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.code; opt.textContent = c.label;
+      if (id === 'f-origin-country' && c.code === 'CH') opt.selected = true;
+      sel.appendChild(opt);
+    });
+  });
+  updateRegimeBanner();
+});
+
+function updateRegimeBanner() {
+  const country = document.getElementById('f-origin-country').value;
+  const banner  = document.getElementById('regime-banner');
+  if (!country) { banner.classList.add('hidden'); return; }
+  const found = COUNTRIES.find(c => c.code === country);
+  if (!found) { banner.classList.add('hidden'); return; }
+  const rc = REGIME_COLORS[found.regime] || REGIME_COLORS['None'];
+  banner.style.background   = rc.bg;
+  banner.style.borderColor  = rc.color + '44';
+  banner.style.color        = rc.color;
+  banner.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${rc.color}" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Applicable law: ${found.regime}`;
+  banner.classList.remove('hidden');
+}
+
+// ÔöÇÔöÇÔöÇ View / Step management ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function showView(id) {
+  ['view-dashboard','view-rental','view-flight'].forEach(v =>
+    document.getElementById(v).classList.toggle('hidden', v !== id));
+}
+
+function showStep(module, step) {
+  ['input','preview','processing','result'].forEach(s =>
+    document.getElementById(`${module}-${s}`).classList.toggle('hidden', s !== step));
+}
+
+function openModule(m) { showView('view-' + m); showStep(m, 'input'); }
+function goBack()       { showView('view-dashboard'); }
+
+// ÔöÇÔöÇÔöÇ File handling ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  document.getElementById('dz-title').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = ev => document.getElementById('rental-text').value = ev.target.result;
+  reader.readAsText(file);
+}
+
+// ÔöÇÔöÇÔöÇ Rental flow ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function startRentalScan() {
+  const raw = document.getElementById('rental-text').value ||
+    'Sample lease: Tenant Hans M├╝ller, Bahnhofstrasse 12, 8001 Z├╝rich, AHV 756.1234.5678.90, IBAN CH56 0483 5012 3456 7800 9. Rent increase of 15% without notice. Deposit: 4 months.';
+  const { anonymized, redactionCount } = anonymize(raw);
+  document.getElementById('rental-redaction-count').textContent =
+    `${redactionCount} sensitive item${redactionCount !== 1 ? 's' : ''} anonymized before transmission`;
+  renderPrivacyBox('rental-preview-box', anonymized);
+  showStep('rental', 'preview');
+}
+
+function runRentalAnalysis() {
+  showStep('rental', 'processing');
+  setTimeout(() => {
+    const result = {
+      score: 71, verdict: "Significant Issues Detected", verdictType: "danger",
+      findings: [
+        { severity:"high",   title:"Unlawful Rent Increase",         detail:"Rent increase of 15% applied without 30-day statutory notice period. Violates Art. 269a CO and VMWG Art. 11." },
+        { severity:"high",   title:"Excessive Deposit",              detail:"Security deposit of 4 months rent exceeds the legal maximum of 3 months (Art. 257e CO)." },
+        { severity:"medium", title:"Prohibited Sub-let Restriction", detail:"Clause 7.3 unconditionally prohibits subletting without landlord consent. Per Art. 262 CO, consent may only be withheld on specific grounds." },
+        { severity:"low",    title:"Non-Standard Renovation Obligation", detail:"Tenant required to repaint entire apartment upon exit. Swiss standard practice limits this to areas exclusively used by tenant." },
+      ],
+      legalBasis: ["Art. 253ÔÇô274g Swiss Code of Obligations (CO)", "VMWG (Ordinance on Lease Agreements)", "Swiss FADP / LPD (Data Privacy)"],
+      complexity: "High ÔÇö Multiple statutory violations identified. Professional legal review strongly advised.",
+    };
+    document.getElementById('rental-result').innerHTML = buildResultHTML(result, 'rental');
+    showStep('rental', 'result');
+  }, 2200);
+}
+
+// ÔöÇÔöÇÔöÇ Flight flow ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function startFlightScan() {
+  const flight = document.getElementById('f-flight').value;
+  const originCountry = document.getElementById('f-origin-country').value;
+  if (!flight || !originCountry) { alert('Please enter at least a flight number and origin country.'); return; }
+  const text = `Flight ${flight} on ${document.getElementById('f-date').value} from ${document.getElementById('f-origin').value} (${originCountry}) to ${document.getElementById('f-dest').value}. Delay: ${document.getElementById('f-delay').value} hours. Reason: ${document.getElementById('f-reason').value}.`;
+  const { anonymized, redactionCount } = anonymize(text);
+  document.getElementById('flight-redaction-count').textContent =
+    `${redactionCount} sensitive item${redactionCount !== 1 ? 's' : ''} anonymized before transmission`;
+  renderPrivacyBox('flight-preview-box', anonymized);
+  showStep('flight', 'preview');
+}
+
+function runFlightAnalysis() {
+  const originCountry = document.getElementById('f-origin-country').value;
+  const found = COUNTRIES.find(c => c.code === originCountry);
+  document.getElementById('flight-processing-sub').textContent =
+    `Cross-referencing ${found ? found.regime : 'applicable regulations'}ÔÇª`;
+  showStep('flight', 'processing');
+  setTimeout(() => {
+    const data = {
+      flight:        document.getElementById('f-flight').value,
+      delay:         parseInt(document.getElementById('f-delay').value) || 0,
+      reason:        document.getElementById('f-reason').value,
+      origin:        document.getElementById('f-origin').value,
+      dest:          document.getElementById('f-dest').value,
+      originCountry: originCountry,
+    };
+    const result = analyzeFlightData(data);
+    document.getElementById('flight-result').innerHTML = buildResultHTML(result, 'flight');
+    showStep('flight', 'result');
+  }, 2000);
+}
+
+// ÔöÇÔöÇÔöÇ Jurisdiction engine ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function detectCarrierRegion(flightNumber) {
+  const code = (flightNumber || '').replace(/[\d\s]/g, '').toUpperCase();
+  if (['LX','WK','2L'].includes(code)) return 'CH';
+  if (EU_CARRIER_CODES.includes(code))  return 'EU';
+  if (['BA','VS','EZ','LS','BY'].includes(code)) return 'UK';
+  if (['AA','UA','DL','WN','B6','AS','NK'].includes(code)) return 'US';
+  if (['AC','WS','PD','TS'].includes(code)) return 'CA';
+  return 'OTHER';
+}
+
+function getDistanceBand(origin, dest) {
+  const longPairs = [['ZRH','JFK'],['ZRH','EWR'],['ZRH','LAX'],['ZRH','SIN'],['ZRH','NRT'],['GVA','YUL'],['ZRH','DXB'],['ZRH','BKK'],['LHR','JFK'],['CDG','LAX']];
+  const key = [origin.toUpperCase(), dest.toUpperCase()].sort().join('-');
+  if (longPairs.some(p => p.sort().join('-') === key)) return 'long';
+  const euAirports = ['LHR','CDG','AMS','FRA','MAD','FCO','VIE','BRU','ZRH','GVA','BSL','MUC','BCN','LIS','CPH','HEL','WAW','PRG','BUD','ATH','DUB','ARN'];
+  if (euAirports.includes(origin.toUpperCase()) && euAirports.includes(dest.toUpperCase())) return 'short';
+  return 'long';
+}
+
+function analyzeFlightData(data) {
+  const { delay, originCountry, flight, origin, dest, reason } = data;
+  const euCodes = ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','CH'];
+  const carrierRegion = detectCarrierRegion(flight);
+  const distanceBand  = getDistanceBand(origin || '', dest || '');
+  let regime;
+  if (euCodes.includes(originCountry)) regime = 'EC261';
+  else if (originCountry === 'UK')     regime = 'UK261';
+  else if (originCountry === 'US')     regime = 'DOT';
+  else if (originCountry === 'CA')     regime = 'APPR';
+  else if (['EU','CH','UK'].includes(carrierRegion)) regime = 'EC261';
+  else regime = 'NONE';
+
+  if (regime === 'EC261' || regime === 'UK261') {
+    const isElig = delay >= 3;
+    const currency = originCountry === 'UK' ? 'GBP' : 'CHF';
+    const comp = distanceBand === 'long' ? (delay >= 4 ? 600 : 300) : (delay >= 3 ? 250 : 0);
+    const regimeName = regime === 'UK261' ? 'UK261' : 'EC 261/2004';
+    const legalNote = regime === 'UK261'
+      ? 'UK retained EC 261/2004 as domestic law post-Brexit. Rights are equivalent.'
+      : originCountry === 'CH'
+        ? "Switzerland's bilateral Air Transport Agreement with the EU extends EC 261/2004 to Swiss-departing flights."
+        : 'Flight departs from an EU member state ÔÇö EC 261/2004 applies directly.';
+    return {
+      score: isElig ? 87 : 20, regime: regimeName,
+      verdict: isElig ? 'Compensation Likely Owed' : 'Eligibility Uncertain',
+      verdictType: isElig ? 'success' : 'warning',
+      findings: [
+        { severity: isElig ? 'high' : 'medium', title:`${delay}h Delay ÔÇö ${isElig ? 'Threshold Met' : 'Below Threshold'}`, detail: isElig ? `${regimeName} Art. 7: delays ÔëÑ3h entitle passengers to ${currency} ${comp} compensation.` : `${regimeName} requires ÔëÑ3h arrival delay. Current delay of ${delay}h does not meet the threshold.` },
+        { severity:'medium', title:`${regimeName} Jurisdiction Confirmed`, detail: legalNote },
+        { severity:'low', title:'Extraordinary Circumstances Defence', detail:'Airline may invoke Art. 5(3) for weather or ATC strikes. Request written explanation within 7 days.' },
+        { severity:'low', title: distanceBand === 'long' ? 'Long-Haul ÔÇö Higher Compensation Band' : 'Short/Medium-Haul Route', detail: distanceBand === 'long' ? `Routes over 3,500km qualify for the maximum ${currency} 600 band.` : `Routes under 3,500km fall in the ${currency} 250ÔÇô400 band.` },
+      ],
+      legalBasis: regime === 'UK261'
+        ? ['UK261 (retained EC 261/2004)','Civil Aviation Act 1982','CAA Enforcement Powers']
+        : originCountry === 'CH'
+          ? ['Regulation (EC) No 261/2004','Swiss-EU Air Transport Agreement (2002)','Swiss Aviation Act (LFG)']
+          : ['Regulation (EC) No 261/2004','EU Aviation Safety Agency (EASA)','National Civil Aviation Authority'],
+      estimatedCompensation: isElig ? `${currency} ${comp}` : 'Not applicable',
+      complexity: isElig
+        ? 'Medium ÔÇö Strong statutory basis. Send demand letter first; escalate to national authority if airline refuses within 14 days.'
+        : 'Low ÔÇö Delay threshold not met. Monitor for airline extraordinary circumstances documentation.',
+    };
+  }
+
+  if (regime === 'DOT') {
+    const hasCancellation = (reason || '').toLowerCase().includes('cancel');
+    return {
+      score: hasCancellation ? 65 : 30, regime: 'US DOT 14 CFR Part 259',
+      verdict: hasCancellation ? 'Refund Rights Apply' : 'Limited Protections',
+      verdictType: 'warning',
+      findings: [
+        { severity:'medium', title:'US DOT Rules Apply', detail:'US law does not mandate fixed delay compensation. DOT rules require full refund for cancellations and significant delays if passenger declines rebooking.' },
+        { severity: hasCancellation ? 'high' : 'low', title: hasCancellation ? 'Cancellation ÔÇö Refund Mandatory' : 'Delay ÔÇö No Fixed Compensation', detail: hasCancellation ? 'DOT 14 CFR 259.5: Airlines must offer full cash refund within 7 days for cancelled flights.' : 'Unlike EC 261/2004, US law sets no fixed compensation amount for delays. Compensation is at airline discretion.' },
+        { severity:'low', title:'Denied Boarding (Overbooking)', detail:'If involuntarily bumped, DOT mandates 200ÔÇô400% of one-way fare (max $1,550) depending on delay to final destination.' },
+      ],
+      legalBasis: ['US DOT 14 CFR Part 259','Enhancing Airline Passenger Protections Rule (2024)','DOT Aviation Consumer Protection'],
+      estimatedCompensation: hasCancellation ? 'Full ticket refund' : 'Airline discretion',
+      complexity: 'Medium ÔÇö US protections are weaker than EC 261/2004 for delays but strong for cancellations. File DOT complaint if airline refuses refund.',
+    };
+  }
+
+  if (regime === 'APPR') {
+    const isLarge = !['PD','TS','F8'].includes((flight||'').replace(/[\d\s]/g,'').toUpperCase());
+    const comp = delay >= 9 ? (isLarge ? 1000 : 500) : delay >= 6 ? (isLarge ? 700 : 350) : delay >= 3 ? (isLarge ? 400 : 200) : 0;
+    const isElig = delay >= 3;
+    return {
+      score: isElig ? 74 : 18, regime: 'Canada APPR',
+      verdict: isElig ? 'APPR Compensation Applicable' : 'Below APPR Threshold',
+      verdictType: isElig ? 'success' : 'warning',
+      findings: [
+        { severity: isElig ? 'high' : 'medium', title:`${delay}h Delay ÔÇö APPR Assessment`, detail: isElig ? `Canadian APPR: CAD ${comp} for ${isLarge ? 'large' : 'small'} carrier with ${delay}h delay.` : 'APPR compensation requires ÔëÑ3h delay within airline control, not safety or extraordinary circumstances.' },
+        { severity:'medium', title:'Within Airline Control Required', detail:'APPR compensation only applies if delay is within airline control and not required for safety. Mechanical issues qualify; weather generally does not.' },
+        { severity:'low', title:'Tarmac Delay Rules', detail:'APPR requires airlines to offer deplaning after 3h tarmac delay and provide food/water after 90 minutes.' },
+      ],
+      legalBasis: ['Air Passenger Protection Regulations (APPR) SOR/2019-150','Canada Transportation Act','Canadian Transportation Agency (CTA)'],
+      estimatedCompensation: isElig ? `CAD ${comp}` : 'Not applicable',
+      complexity: isElig
+        ? 'Medium ÔÇö File claim with airline first (within 1 year). Escalate to Canadian Transportation Agency if denied within 30 days.'
+        : 'Low ÔÇö Threshold not met or delay may fall under safety/weather exemption.',
+    };
+  }
+
+  return {
+    score: 15, regime: 'No applicable international regime',
+    verdict: 'No Mandatory Protection Identified', verdictType: 'warning',
+    findings: [
+      { severity:'medium', title:'Origin Country Not Covered', detail:'Flights departing non-EU/CH/UK/US/CA airports on non-EU carriers do not fall under any mandatory international compensation framework.' },
+      { severity:'low', title:"Airline Contract of Carriage", detail:"Check the airline's own conditions of carriage ÔÇö some carriers offer voluntary compensation beyond legal minimums." },
+      { severity:'low', title:'Travel Insurance Recommended', detail:'Trip disruption cover in your travel insurance may provide compensation regardless of jurisdiction.' },
+    ],
+    legalBasis: ['Montreal Convention 1999 (baggage/injury only)','Airline Contract of Carriage','Travel Insurance Policy Terms'],
+    estimatedCompensation: 'Not applicable under international law',
+    complexity: 'Low ÔÇö No statutory compensation regime applies. Focus on airline goodwill, travel insurance, and credit card purchase protections.',
+  };
+}
+
+// ÔöÇÔöÇÔöÇ Result HTML builder ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+function buildResultHTML(result, module) {
+  const vcMap = {
+    danger:  { bg:'#fde8e8', text:'#991b1b', border:'#f5c6c6' },
+    success: { bg:'#e8f5e9', text:'#1b5e20', border:'#a5d6a7' },
+    warning: { bg:'#fef3cd', text:'#7c4f00', border:'#ffe082' },
+  };
+  const vc = vcMap[result.verdictType] || vcMap.warning;
+  const scoreColor = result.verdictType === 'danger' ? '#D52B1E' : result.verdictType === 'success' ? '#0a7c4e' : '#c47c00';
+  const r = 44, circ = 2 * Math.PI * r;
+  const fill = (result.score / 100) * circ;
+
+  const findingsHTML = result.findings.map((f, i) => `
+    <div class="finding-row" style="${i === result.findings.length-1 ? 'border-bottom:none;padding-bottom:0;margin-bottom:0' : ''}">
+      <span class="badge badge-${f.severity}">${f.severity.toUpperCase().slice(0,3)}</span>
+      <div>
+        <div class="finding-title">${f.title}</div>
+        <div class="finding-detail">${f.detail}</div>
+      </div>
+    </div>`).join('');
+
+  const legalHTML = result.legalBasis.map(b => `
+    <div class="legal-item">
+      <div class="legal-dot"></div>
+      <span class="legal-text">${b}</span>
+    </div>`).join('');
+
+  return `
+    <div class="card">
+      <div class="score-header">
+        <div class="score-ring-wrap">
+          <svg width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="${r}" fill="none" stroke="#dde3ef" stroke-width="8"/>
+            <circle cx="55" cy="55" r="${r}" fill="none" stroke="${scoreColor}" stroke-width="8"
+              stroke-dasharray="${fill} ${circ}" stroke-linecap="round"
+              transform="rotate(-90 55 55)"/>
+          </svg>
+          <div class="score-center">
+            <span class="score-num" style="color:${scoreColor}">${result.score}</span>
+            <span class="score-denom">/ 100</span>
+          </div>
+        </div>
+        <div class="score-body">
+          <div class="score-label">Risk Assessment Score</div>
+          <div class="score-verdict">${result.verdict}</div>
+          ${result.regime ? `<div class="regime-pill">${result.regime}</div>` : ''}
+          ${result.estimatedCompensation ? `<div class="comp-est">Estimated: <strong>${result.estimatedCompensation}</strong></div>` : ''}
+        </div>
+        <button class="new-analysis" onclick="resetModule('${module}')">New Analysis</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Findings</div>
+      ${findingsHTML}
+    </div>
+
+    <div class="card">
+      <div class="card-label">Legal Basis Applied</div>
+      ${legalHTML}
+    </div>
+
+    <div class="complexity-card" style="background:${vc.bg};border:1px solid ${vc.border}">
+      <div class="complexity-label" style="color:${vc.text}">Legal Complexity Detected</div>
+      <div class="complexity-text" style="color:${vc.text}">${result.complexity}</div>
+      <div class="cta-row">
+        <button class="btn-letter" id="${module}-letter-btn" onclick="generateLetter('${module}', ${JSON.stringify(result).replace(/'/g,"&#39;")})">
+          Generate Legal Demand Letter
+        </button>
+        <button class="btn-lawyer">Connect Swiss Partner Lawyer ÔåÆ</button>
+      </div>
+    </div>
+
+    <div id="${module}-letter-output" class="card hidden">
+      <div class="card-label">Generated Legal Demand Letter</div>
+      <div class="letter-text" id="${module}-letter-text"></div>
+    </div>
+  `;
+}
+
+function resetModule(module) {
+  showStep(module, 'input');
+  if (module === 'rental') {
+    document.getElementById('rental-text').value = '';
+    document.getElementById('dz-title').textContent = 'Upload Lease Agreement';
+  }
+}
+
+// ÔöÇÔöÇÔöÇ AI Letter Generation ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+async function generateLetter(module, result) {
+  const btn = document.getElementById(`${module}-letter-btn`);
+  btn.disabled = true;
+  btn.textContent = 'GeneratingÔÇª';
+
+  const prompt = module === 'rental'
+    ? `Write a formal legal demand letter in English to a Swiss landlord, referencing these violations: ${result.findings.filter(f=>f.severity==='high').map(f=>f.title).join(', ')}. Cite ${result.legalBasis[0]}. Under 200 words, professional tone.`
+    : `Write a formal compensation demand letter to an airline. ${result.findings[0]?.detail} Reference ${result.legalBasis[0]}. Under 180 words, assertive but professional.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = (data.content || []).map(b => b.text || '').join('') || 'Could not generate letter.';
+    document.getElementById(`${module}-letter-text`).textContent = text;
+  } catch {
+    document.getElementById(`${module}-letter-text`).textContent = 'Error generating letter. Please try again.';
+  }
+
+  document.getElementById(`${module}-letter-output`).classList.remove('hidden');
+  btn.textContent = 'Generate Legal Demand Letter';
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>
